@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 #
 
-echo "Starting serve process..."
-# TODO: Add case statement to allow stopping, starting, and restarting
-# TODO: Add logic to detect both podman and docker, if both are installed, use podman as default "first found"
+UTILITIES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=container-engine.sh
+source "$UTILITIES_DIR/container-engine.sh"
+ENGINE="$(container_engine)" || exit 1
 
-docker run -d --rm --name showroom-httpd -p 8080:8080 \
+echo "Starting serve process (using $ENGINE)..."
+
+"$ENGINE" run -d --rm --name showroom-httpd -p 8080:8080 \
   -v "./www:/var/www/html/:z" \
   registry.access.redhat.com/ubi9/httpd-24:1-301
 
